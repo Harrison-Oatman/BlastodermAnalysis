@@ -1,0 +1,8 @@
+name: dnt
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - napari[all]
+  - blender-tissue-cartography
