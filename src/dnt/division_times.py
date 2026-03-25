@@ -111,11 +111,15 @@ def get_division_times(df: pd.DataFrame) -> pd.DataFrame:
         print(f"x intercepts for cycle {c}: {np.roots(z)}")
 
     tracklet_times = defaultdict(list)
+    tracklet_tracks = df.groupby("tracklet_id")["track_id"].first()
 
     for tid, group in prev_tracklet_df.groupby("prev_tracklet_id"):
         distances = group["distance"].values
         time_sinces = group["time_since_division"].values
         this_cycle = group["cycle"].values[0]
+
+        if this_cycle == 10:
+            continue
 
         x0, offset, mse = _match_quadratic(
             time_sinces, distances, cycle_fits[this_cycle]
@@ -124,6 +128,7 @@ def get_division_times(df: pd.DataFrame) -> pd.DataFrame:
         corrected_division_time = group["nc11_time"].min() + x0
 
         tracklet_times["tracklet_id"].append(tid)
+        tracklet_times["track_id"].append(tracklet_tracks[tid])
         tracklet_times["division_time"].append(group["nc11_time"].min())
         tracklet_times["cycle"].append(this_cycle - 1)
         tracklet_times["corrected_division_time"].append(corrected_division_time)
